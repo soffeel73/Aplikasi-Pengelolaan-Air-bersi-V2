@@ -24,3 +24,6 @@ dist-ssr
 
 # User Uploads
 uploads/
+
+# PHP Dependencies (installed by Vercel PHP runtime)
+vendor/

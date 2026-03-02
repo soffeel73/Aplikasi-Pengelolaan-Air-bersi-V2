@@ -14,7 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Database connection
-require_once 'util/db.php';
+if (isset($_ENV['VERCEL']) || getenv('VERCEL')) {
+    require_once 'util/db_production.php';
+}
+else {
+    require_once 'util/db.php';
+}
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'search';
 

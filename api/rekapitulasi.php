@@ -16,7 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Database connection
-require_once 'util/db.php';
+if (isset($_ENV['VERCEL']) || getenv('VERCEL')) {
+    require_once 'util/db_production.php';
+}
+else {
+    require_once 'util/db.php';
+}
 
 $type = isset($_GET['type']) ? $_GET['type'] : '';
 $year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');

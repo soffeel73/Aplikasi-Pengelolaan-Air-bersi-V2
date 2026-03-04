@@ -1,27 +1,17 @@
 <?php
 // Smart Air Desa - Database Connection
-// Auto-detect environment: Vercel / InfinityFree / XAMPP (local)
+// Auto-detect environment: Supabase (Vercel) / XAMPP (local)
 
 $isProduction = isset($_ENV['VERCEL']) || getenv('VERCEL');
-$isInfinityFree = isset($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], 'rf.gd') !== false;
 
-if ($isInfinityFree) {
-    // InfinityFree Hosting
-    $host = 'sql100.infinityfree.com';
-    $port = '3306';
-    $dbname = 'if0_41064548_hippams';
-    $username = 'if0_41064548';
-    $password = 'Faraway24';
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
-}
-elseif ($isProduction) {
-    // Production: Hostinger Remote MySQL
-    $host = '153.92.15.84';
-    $port = '3306';
-    $dbname = 'u915147866_db_hippams';
-    $username = 'u915147866_hippams';
-    $password = 'Hippams2026!';
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+if ($isProduction) {
+    // Production: Supabase PostgreSQL
+    $host = getenv('SUPABASE_DB_HOST') ?: 'db.ycbqadjsjphovxcbicvm.supabase.co';
+    $port = getenv('SUPABASE_DB_PORT') ?: '5432';
+    $dbname = getenv('SUPABASE_DB_NAME') ?: 'postgres';
+    $username = getenv('SUPABASE_DB_USER') ?: 'postgres.ycbqadjsjphovxcbicvm';
+    $password = getenv('SUPABASE_DB_PASS') ?: '';
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 }
 else {
     // Local: XAMPP MySQL
@@ -30,12 +20,54 @@ else {
     $password = '';
 }
 
+/**
+ * Custom PDO wrapper for cross-database lastInsertId() compatibility.
+ * PostgreSQL's PDO driver requires the sequence name for lastInsertId().
+ * This wrapper auto-detects the table from the last INSERT and builds the sequence name.
+ */
+class SmartPDO extends PDO
+{
+    private $lastTable = null;
+    private $isPostgres = false;
+
+    public function __construct($dsn, $username, $password, $options)
+    {
+        parent::__construct($dsn, $username, $password, $options);
+        $this->isPostgres = (strpos($dsn, 'pgsql:') === 0);
+    }
+
+    public function prepare($query, $options = [])
+    {
+        // Track table name from INSERT queries
+        if (preg_match('/INSERT\s+INTO\s+[`"]?(\w+)[`"]?/i', $query, $m)) {
+            $this->lastTable = $m[1];
+        }
+        return parent::prepare($query, $options);
+    }
+
+    public function lastInsertId($name = null)
+    {
+        if ($name === null && $this->isPostgres && $this->lastTable) {
+            // PostgreSQL sequence naming convention: tablename_id_seq
+            return parent::lastInsertId($this->lastTable . '_id_seq');
+        }
+        return parent::lastInsertId($name);
+    }
+}
+
 try {
-    $pdo = new PDO($dsn, $username, $password, [
+    $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
+    ];
+
+    $pdo = new SmartPDO($dsn, $username, $password, $options);
+
+    // Set timezone for PostgreSQL
+    if ($isProduction) {
+        $pdo->exec("SET timezone = 'Asia/Jakarta'");
+    }
 }
 catch (PDOException $e) {
     http_response_code(500);

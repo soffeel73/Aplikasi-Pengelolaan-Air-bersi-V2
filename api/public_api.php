@@ -39,12 +39,7 @@ if ($_SESSION['rate_limit_count'] > $rateLimit) {
 }
 
 // Database connection
-if (isset($_ENV['VERCEL']) || getenv('VERCEL')) {
-    require_once 'util/db_production.php';
-}
-else {
-    require_once 'util/db.php';
-}
+require_once 'util/db.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 

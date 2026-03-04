@@ -1,10 +1,10 @@
 <?php
 // JALUR DARURAT: Menghindari masalah Environment Variables Vercel
-$host = getenv('DB_HOST') ?: '153.92.15.84';
-$port = getenv('DB_PORT') ?: '3306';
-$dbname = getenv('DB_NAME') ?: 'u915147866_db_hippams';
-$username = getenv('DB_USER') ?: 'u915147866_hippams';
-$password = getenv('DB_PASS') ?: 'Hippams2026!';
+$host = '153.92.15.84'; // IP Hostinger Anda
+$port = '3306';
+$dbname = 'u915147866_db_hippams'; // GANTI dengan nama database Hostinger Anda
+$username = 'u915147866_hippams'; // GANTI dengan username database Hostinger Anda
+$password = 'Hippams2026!'; // GANTI dengan password database Hostinger Anda
 
 try {
     // Kita paksa menggunakan dsn tanpa variabel getenv

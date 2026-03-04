@@ -16,12 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Database connection
-if (isset($_ENV['VERCEL']) || getenv('VERCEL')) {
-    require_once 'util/db_production.php';
-}
-else {
-    require_once 'util/db.php';
-}
+require_once 'util/db.php';
 
 // Helper: Normalize image path for cross-environment compatibility
 function normalizeImagePath($path)
@@ -103,7 +98,7 @@ function handlePengurus($pdo, $method)
 function getPengurus($pdo)
 {
     try {
-        $stmt = $pdo->query("SELECT * FROM pengurus WHERE is_active = 1 ORDER BY urutan ASC, id ASC");
+        $stmt = $pdo->query("SELECT * FROM pengurus WHERE is_active = TRUE ORDER BY urutan ASC, id ASC");
         $pengurus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Normalize image paths
@@ -133,7 +128,7 @@ function createPengurus($pdo)
     try {
         $stmt = $pdo->prepare("
             INSERT INTO pengurus (nama, jabatan, foto_url, urutan, is_active)
-            VALUES (:nama, :jabatan, :foto_url, :urutan, 1)
+            VALUES (:nama, :jabatan, :foto_url, :urutan, TRUE)
         ");
         $stmt->execute([
             ':nama' => $data['nama'],
@@ -176,7 +171,7 @@ function updatePengurus($pdo)
             ':jabatan' => $data['jabatan'],
             ':foto_url' => $data['foto_url'] ?? null,
             ':urutan' => $data['urutan'] ?? 0,
-            ':is_active' => $data['is_active'] ?? 1
+            ':is_active' => isset($data['is_active']) ? (bool)$data['is_active'] : true
         ]);
 
         echo json_encode(['success' => true, 'message' => 'Pengurus berhasil diperbarui']);
@@ -307,7 +302,7 @@ function handleUploadGaleri($pdo)
 
             $stmt = $pdo->prepare("
                 INSERT INTO galeris (image_path, judul, caption, kategori, is_active)
-                VALUES (:image_path, :judul, :caption, :kategori, 1)
+                VALUES (:image_path, :judul, :caption, :kategori, TRUE)
             ");
             $stmt->execute([
                 ':image_path' => $url,
@@ -358,7 +353,7 @@ function updateGaleri($pdo)
             ':judul' => $data['judul'] ?? null,
             ':caption' => $data['caption'] ?? null,
             ':kategori' => $data['kategori'] ?? 'Kegiatan',
-            ':is_active' => $data['is_active'] ?? 1
+            ':is_active' => isset($data['is_active']) ? (bool)$data['is_active'] : true
         ]);
 
         echo json_encode(['success' => true, 'message' => 'Data galeri diperbarui']);

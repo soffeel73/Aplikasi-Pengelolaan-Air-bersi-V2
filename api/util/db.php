@@ -11,7 +11,7 @@ if ($isProduction) {
     $dbname = getenv('SUPABASE_DB_NAME') ?: 'postgres';
     $username = getenv('SUPABASE_DB_USER') ?: 'postgres.ycbqadjsjphovxcbicvm';
     $password = getenv('SUPABASE_DB_PASS') ?: '';
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 }
 else {
     // Local: XAMPP MySQL
@@ -74,7 +74,7 @@ catch (PDOException $e) {
     header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection failed: ' . ($isProduction ? 'Production DB error' : $e->getMessage())
+        'message' => 'Database connection failed: ' . $e->getMessage()
     ]);
     exit();
 }

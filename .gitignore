@@ -35,3 +35,5 @@ api/.env.local
 api/.env.*.local
 .env
 .env.local
+
+.vercel

@@ -77,7 +77,7 @@ catch (PDOException $e) {
     header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection failed: ' . $e->getMessage(),
+        'message' => 'DB_FAIL_V2: ' . $e->getMessage(),
         'debug_dsn' => $isProduction ? str_replace($password, '****', $dsn) : $dsn,
         'debug_user' => $username
     ]);

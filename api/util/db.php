@@ -10,9 +10,9 @@ $isProduction = isset($_ENV['VERCEL']) || getenv('VERCEL');
 if ($isProduction) {
     // Production: Supabase PostgreSQL
     $host = getenv('SUPABASE_DB_HOST') ?: 'db.ycbqadjsjphovxcbicvm.supabase.co';
-    $port = getenv('SUPABASE_DB_PORT') ?: '5432';
+    $port = '5432'; // Force direct connection
     $dbname = getenv('SUPABASE_DB_NAME') ?: 'postgres';
-    $username = getenv('SUPABASE_DB_USER') ?: 'postgres';
+    $username = 'postgres'; // Force standard user
     $password = getenv('SUPABASE_DB_PASS') ?: 'PprVXblC3jp6oBfi';
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 }

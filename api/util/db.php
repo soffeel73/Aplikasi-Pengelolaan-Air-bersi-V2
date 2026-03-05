@@ -8,9 +8,9 @@ error_reporting(E_ALL);
 $isProduction = isset($_ENV['VERCEL']) || getenv('VERCEL');
 
 if ($isProduction) {
-    // Production: Supabase PostgreSQL (Direct host with pooled username)
+    // Production: Supabase PostgreSQL (Using Pooler Port 6543 for serverless)
     $host = 'db.ycbqadjsjphovxcbicvm.supabase.co';
-    $port = '5432';
+    $port = '6543';
     $dbname = 'postgres';
     $username = 'postgres.ycbqadjsjphovxcbicvm';
     $password = 'PprVXblC3jp6oBfi';

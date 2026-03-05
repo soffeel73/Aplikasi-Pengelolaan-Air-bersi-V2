@@ -12,7 +12,7 @@ if ($isProduction) {
     $host = 'db.ycbqadjsjphovxcbicvm.supabase.co';
     $port = '5432';
     $dbname = getenv('SUPABASE_DB_NAME') ?: 'postgres';
-    $username = 'postgres';
+    $username = 'postgres.ycbqadjsjphovxcbicvm';
     $password = getenv('SUPABASE_DB_PASS') ?: 'PprVXblC3jp6oBfi';
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 }

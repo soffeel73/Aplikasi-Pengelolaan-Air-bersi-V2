@@ -24,6 +24,10 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 switch ($method) {
     case 'GET':
+        if ($path === 'diag') {
+            runDiagnostics($pdo);
+            exit();
+        }
         if ($id) {
             // Get single customer
             getCustomer($pdo, $id);
@@ -333,5 +337,62 @@ function deleteCustomer($pdo, $id)
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Gagal menghapus pelanggan']);
     }
+}
+// Diagnostics
+function runDiagnostics($pdo)
+{
+    $password = 'PprVXblC3jp6oBfi';
+    $ref = 'ycbqadjsjphovxcbicvm';
+    $region = 'ap-southeast-1';
+
+    $tests = [
+        [
+            'name' => 'Direct Host, Port 5432, User postgres',
+            'host' => "db.$ref.supabase.co",
+            'port' => '5432',
+            'user' => 'postgres'
+        ],
+        [
+            'name' => 'Regional Pooler, Port 6543, Pooled User',
+            'host' => "aws-0-$region.pooler.supabase.com",
+            'port' => '6543',
+            'user' => "postgres.$ref"
+        ],
+        [
+            'name' => 'Regional Pooler, Port 5432, Pooled User',
+            'host' => "aws-0-$region.pooler.supabase.com",
+            'port' => '5432',
+            'user' => "postgres.$ref"
+        ],
+    ];
+
+    $results = [];
+
+    foreach ($tests as $test) {
+        try {
+            $dsn = "pgsql:host={$test['host']};port={$test['port']};dbname=postgres;sslmode=require";
+            $start = microtime(true);
+            $testPdo = new PDO($dsn, $test['user'], $password, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 5
+            ]);
+            $end = microtime(true);
+            $results[] = [
+                'test' => $test['name'],
+                'success' => true,
+                'time' => round($end - $start, 3) . 's',
+                'version' => $testPdo->query("SELECT version()")->fetchColumn()
+            ];
+        }
+        catch (Exception $e) {
+            $results[] = [
+                'test' => $test['name'],
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    echo json_encode($results, JSON_PRETTY_PRINT);
 }
 ?>

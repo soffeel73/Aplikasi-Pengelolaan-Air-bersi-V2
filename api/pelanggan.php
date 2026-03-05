@@ -24,10 +24,6 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 switch ($method) {
     case 'GET':
-        if ($path === 'diag') {
-            runDiagnostics($pdo);
-            exit();
-        }
         if ($id) {
             // Get single customer
             getCustomer($pdo, $id);

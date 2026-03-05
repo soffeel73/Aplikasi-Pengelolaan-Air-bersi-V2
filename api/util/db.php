@@ -1,15 +1,18 @@
 <?php
 // Smart Air Desa - Database Connection
 // Auto-detect environment: Supabase (Vercel) / XAMPP (local)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 $isProduction = isset($_ENV['VERCEL']) || getenv('VERCEL');
 
 if ($isProduction) {
     // Production: Supabase PostgreSQL
     $host = getenv('SUPABASE_DB_HOST') ?: 'db.ycbqadjsjphovxcbicvm.supabase.co';
-    $port = getenv('SUPABASE_DB_PORT') ?: '6543';
+    $port = getenv('SUPABASE_DB_PORT') ?: '5432';
     $dbname = getenv('SUPABASE_DB_NAME') ?: 'postgres';
-    $username = getenv('SUPABASE_DB_USER') ?: 'postgres.ycbqadjsjphovxcbicvm';
+    $username = getenv('SUPABASE_DB_USER') ?: 'postgres';
     $password = getenv('SUPABASE_DB_PASS') ?: 'PprVXblC3jp6oBfi';
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 }

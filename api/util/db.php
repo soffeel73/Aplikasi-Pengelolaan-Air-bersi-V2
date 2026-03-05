@@ -8,8 +8,8 @@ error_reporting(E_ALL);
 $isProduction = isset($_ENV['VERCEL']) || getenv('VERCEL');
 
 if ($isProduction) {
-    // Production: Supabase PostgreSQL (Regional Pooler for IPv4 compatibility)
-    $host = 'aws-0-ap-southeast-1.pooler.supabase.com';
+    // Production: Supabase PostgreSQL (Direct host with pooled username)
+    $host = 'db.ycbqadjsjphovxcbicvm.supabase.co';
     $port = '5432';
     $dbname = 'postgres';
     $username = 'postgres.ycbqadjsjphovxcbicvm';

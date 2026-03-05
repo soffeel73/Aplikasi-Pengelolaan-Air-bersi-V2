@@ -78,6 +78,12 @@ const routes = [
     component: () => import('../views/StatistikPublic.vue'),
     meta: { requiresAuth: false }
   },
+  {
+    path: '/supabase-users',
+    name: 'SupabaseUsers',
+    component: () => import('../views/SupabaseUsers.vue'),
+    meta: { requiresAuth: false }
+  },
 
   // Admin Routes
   {
